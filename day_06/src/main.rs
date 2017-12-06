@@ -23,6 +23,7 @@ fn load_data(path: &str) -> Result<Vec<i32>, io::Error> {
 fn advance_memory(banks: &mut Vec<i32>) {
     let mut idx :usize = 0;
     let mut max = -1;
+
     // wanted to use iter().enumerate() but can't because it works back to front!
     for i in 0 .. banks.len() {
         if banks[i] > max {
@@ -42,46 +43,43 @@ fn advance_memory(banks: &mut Vec<i32>) {
 // part 1
 fn count_steps_to_loop(banks: &mut Vec<i32>) -> i32 {
     let mut count : i32 = 0;
-    let mut prev : Vec<String> = Vec::new();
+    let mut prev : Vec<Vec<i32>> = Vec::new();
 
     loop {
         advance_memory(banks);
-        let strings : Vec<_> = banks.iter().map(|&val| { let x = val.to_string(); return x; }).collect::<Vec<String>>();
-        let hash_string = strings.concat();
+        let current_state = banks.clone();
         count += 1;
-        if prev.contains(&hash_string) {
+        if prev.contains(&current_state) {
             break;
         }
-        prev.push(hash_string);
+        prev.push(current_state);
     }
     return count;
 }
 
-// part 1
+// part 2
 fn count_steps_to_repeat(banks: &mut Vec<i32>) -> i32 {
     let mut count : i32 = 0;
-    let mut prev : Vec<String> = Vec::new();
-    let repeat_to_find : String;
+    let mut prev : Vec<Vec<i32>> = Vec::new();
+    let repeat_to_find : Vec<i32>;
 
     loop {
         advance_memory(banks);
-        let strings : Vec<_> = banks.iter().map(|&val| { let x = val.to_string(); return x; }).collect::<Vec<String>>();
-        let hash_string = strings.concat();
+        let current_state = banks.clone();
         count += 1;
-        if prev.contains(&hash_string) {
-            repeat_to_find = hash_string;
+        if prev.contains(&current_state) {
+            repeat_to_find = current_state;
             break;
         }
-        prev.push(hash_string);
+        prev.push(current_state);
     }
 
     count = 0;
     loop {
         advance_memory(banks);
-        let strings : Vec<_> = banks.iter().map(|&val| { let x = val.to_string(); return x; }).collect::<Vec<String>>();
-        let hash_string = strings.concat();
+        let current_state = banks.clone();
         count += 1;
-        if repeat_to_find == hash_string {
+        if repeat_to_find == current_state {
             break;
         }
     }
